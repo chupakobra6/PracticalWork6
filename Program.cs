@@ -6,13 +6,11 @@ namespace ConsoleApp3
     {
         static void Main(string[] args) // чтение пути, обращение к Read
         {
-
             Console.WriteLine("Введите путь до файла (с названием), который вы хотите открыть\r\n--------------------------------------------------------------");
 
             string path = Console.ReadLine();
 
             ReadnSave.Read(path);
-
         }
     }
 }

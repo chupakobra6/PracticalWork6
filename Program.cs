@@ -1,14 +1,27 @@
 ﻿using System.IO;
+using System.Linq;
 
 namespace ConsoleApp3
 {
     internal class Program
     {
-        static void Main(string[] args) // чтение пути, обращение к Read
+        public static int init = 6;
+
+        public static void Main(string[] args) // чтение пути, обращение к Read
         {
-            Console.WriteLine("Введите путь до файла (с названием), который вы хотите открыть\r\n--------------------------------------------------------------");
+            Console.WriteLine("Введите путь до файла (с названием), который вы хотите открыть.\r\n---------------------------------------------------------------");
 
             string path = Console.ReadLine();
+
+            Console.WriteLine("Введите кол-во записей в вашем дневнике (по умолчанию шесть): ");
+            
+
+            string init1 = Console.ReadLine();
+
+            if (!string.IsNullOrEmpty(init1))
+            {
+                init = Convert.ToInt32(init1);
+            }
 
             ReadnSave.Read(path);
         }

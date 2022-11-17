@@ -45,7 +45,7 @@ namespace ConsoleApp3
 
                     for (int k = 0; k < txt.Length / 3; k++)
                     {
-                        txt[2 + (k * 3)] += "\r\n";
+                        txt[3 + (k * 3)] += "\r\n";
                         newDiary.content[k] = txt[3 + (k * 3)];
                     }
 
@@ -57,7 +57,7 @@ namespace ConsoleApp3
 
                         for (int j = 0; j < diary.date.Length; j++)
                         {
-                            Console.WriteLine(diary.date[j] + diary.content[j] + "\r\n");
+                            Console.WriteLine(diary.date[j] + diary.content[j]);
                         }
                     }
 
@@ -104,13 +104,14 @@ namespace ConsoleApp3
 
                     else if (key.Key == ConsoleKey.Escape)
                     {
-
+                        break;
                     }
 
-                    else
+                    else if ((key.Key == ConsoleKey.UpArrow) || (key.Key == ConsoleKey.DownArrow) || (key.Key == ConsoleKey.LeftArrow) || (key.Key == ConsoleKey.RightArrow))
                     {
-                        FileEdit(result);
+                        CursorMove(key);
                     }
+
                 } while (true);
             }
 
@@ -126,15 +127,16 @@ namespace ConsoleApp3
             Console.WriteLine("Сохранить файл в одном из трёх форматов (txt, json, xml) - F1. Закрыть программу - Escape\r\n-----------------------------------------------------------------------------------------\r\n");
 
             path = SavePathEdit(path);
+            Console.SetCursorPosition(0, 3);
+
+            if (File.Exists(path))
+            {
+                Console.WriteLine("Файл с таким названием уже существует. Программа перезапишет его. Нажмите любую клавишу, чтобы продолжить.");
+                ConsoleKeyInfo key = Console.ReadKey(true);
+            }
 
             if (path.Contains(".txt"))
             {
-                if (File.Exists(path))
-                {
-                    Console.WriteLine("Файл с таким названием уже существует. Программа перезапишет его. Нажмите любую клавишу, чтобы продолжить.");
-                    ConsoleKeyInfo key = Console.ReadKey(true);
-                }
-
                 string txt = "";
 
                 foreach (Diary diary in result)
@@ -148,93 +150,63 @@ namespace ConsoleApp3
                 }
 
                 File.WriteAllText(path, txt);
-
-                Console.WriteLine("Успешно!");
             }
 
             else if (path.Contains(".xml"))
             {
-                if (File.Exists(path))
+                XmlSerializer xml = new XmlSerializer(typeof(List<Diary>));
+                using (FileStream fs = new FileStream(path, FileMode.Create))
                 {
-                    Console.WriteLine("Файл с таким названием уже существует. Программа перезапишет его. Нажмите любую клавишу, чтобы продолжить.");
-                    ConsoleKeyInfo key = Console.ReadKey(true);
+                    xml.Serialize(fs, result);
                 }
-
-                Console.WriteLine("Успешно!");
             }
 
             else if (path.Contains(".json"))
             {
-                if (File.Exists(path))
-                {
-                    Console.WriteLine("Файл с таким названием уже существует. Программа перезапишет его. Нажмите любую клавишу, чтобы продолжить.");
-                    ConsoleKeyInfo key = Console.ReadKey(true);
-                }
-
-                Console.WriteLine("Успешно!");
+                string json = JsonConvert.SerializeObject(result);
+                File.WriteAllText(path, json);
             }
 
+            Console.WriteLine("Успешно!");
         }
 
-        static void CursorMove()
+        static void CursorMove(ConsoleKeyInfo key)
         {
-            int left = 0;
-            int top = 2;
-
-            do
+            if (key.Key == ConsoleKey.UpArrow)
             {
-                ConsoleKeyInfo key = Console.ReadKey(true);
-
-                if (key.Key == ConsoleKey.UpArrow)
+                if (Console.CursorTop == 2)
                 {
-                    if (top == 2)
-                    {
-                        top = 2;
-                    }
-
-                    else
-                    {
-                        top--;
-                    }
-                }
-
-                else if (key.Key == ConsoleKey.DownArrow)
-                {
-                    top++;
-                }
-
-                else if (key.Key == ConsoleKey.LeftArrow)
-                {
-                    if (left == 0)
-                    {
-                        left = 0;
-                    }
-
-                    else
-                    {
-                        Console.CursorLeft = Console.CursorLeft - 1;
-                        left--;
-                    }
-                }
-
-                else if (key.Key == ConsoleKey.RightArrow)
-                {
-                    left++;
-                }
-
-                else if (key.Key == ConsoleKey.Enter)
-                {
-                    break;
+                    Console.CursorTop = 2;
                 }
 
                 else
                 {
+                    Console.CursorTop--;
+                }
+            }
 
+            else if (key.Key == ConsoleKey.DownArrow)
+            {
+                Console.CursorTop++;
+            }
+
+            else if (key.Key == ConsoleKey.LeftArrow)
+            {
+                if (Console.CursorLeft == 0)
+                {
+                    Console.CursorLeft = 0;
                 }
 
-                Console.SetCursorPosition(left, top);
+                else
+                {
+                    Console.CursorLeft--;
+                }
+            }
 
-            } while (true);
+            else if (key.Key == ConsoleKey.RightArrow)
+            {
+                Console.CursorLeft++;
+            }
         }
 
         static string SavePathEdit(string path)
@@ -252,7 +224,7 @@ namespace ConsoleApp3
 
                 Console.SetCursorPosition(0, 2);
 
-                Console.WriteLine(path);
+                Console.Write(path);
 
 
                 key = Console.ReadKey(true);

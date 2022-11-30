@@ -13,8 +13,14 @@ namespace ConsoleApp3
 
             string path = Console.ReadLine();
 
+            if (!File.Exists(path))
+            {
+                Console.WriteLine("Файл не существует! Проверьте правильность введённого пути.");
+                return;
+            }
+
             Console.WriteLine("Введите кол-во записей в вашем дневнике (по умолчанию шесть): ");
-            
+
 
             string init1 = Console.ReadLine();
 
